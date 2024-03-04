@@ -9,6 +9,8 @@ use ApiUsageException;
 use Config;
 use ConfigFactory;
 use FauxRequest;
+use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\HookContainer\HookRunner;
 use MediaWiki\Languages\LanguageConverterFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -53,6 +55,15 @@ class ApiQueryExtracts extends ApiQueryBase {
 	 */
 	private $wikiPageFactory;
 
+	/**
+	 * @var HookContainer
+	 */
+	private $hookContainer;
+	/**
+	 * @var HookRunner
+	 */
+	private $hookRunner;
+
 	// TODO: Allow extensions to hook into this to opt-in.
 	// This is partly for security reasons; see T107170.
 	/**
@@ -81,6 +92,8 @@ class ApiQueryExtracts extends ApiQueryBase {
 		$this->cache = $cache;
 		$this->langConvFactory = $langConvFactory;
 		$this->wikiPageFactory = $wikiPageFactory;
+		$this->hookContainer = MediaWikiServices::getInstance()->getHookContainer();
+		$this->hookRunner = new HookRunner( $this->hookContainer );	
 	}
 
 	/**
@@ -117,6 +130,9 @@ class ApiQueryExtracts extends ApiQueryBase {
 				break;
 			}
 
+			if(!$this->hookRunner->onGetUserPermissionsErrors($t,$this->getUser(),'read',$result)) {
+				$this->dieWithError($result);
+			}
 			if ( $t->inNamespace( NS_FILE ) ) {
 				$text = '';
 				$titleInFileNamespace = true;
