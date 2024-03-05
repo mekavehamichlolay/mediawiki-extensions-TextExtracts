@@ -4,6 +4,7 @@ namespace TextExtracts;
 
 use ApiBase;
 use ApiMain;
+use ApiMessage;
 use ApiQueryBase;
 use ApiUsageException;
 use Config;
@@ -16,6 +17,7 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use ParserOptions;
+use Status;
 use Title;
 use WANObjectCache;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -130,8 +132,9 @@ class ApiQueryExtracts extends ApiQueryBase {
 				break;
 			}
 
-			if(!$this->hookRunner->onGetUserPermissionsErrors($t,$this->getUser(),'read',$result)) {
-				$this->dieWithError($result);
+			// Check if the user has the right to read the page
+			if( !$this->getAuthority()->authorizeRead('read',$t) ){
+				continue;
 			}
 			if ( $t->inNamespace( NS_FILE ) ) {
 				$text = '';
