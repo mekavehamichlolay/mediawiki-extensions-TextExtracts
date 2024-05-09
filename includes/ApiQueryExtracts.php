@@ -4,20 +4,16 @@ namespace TextExtracts;
 
 use ApiBase;
 use ApiMain;
-use ApiMessage;
 use ApiQueryBase;
 use ApiUsageException;
 use Config;
 use ConfigFactory;
 use FauxRequest;
-use MediaWiki\HookContainer\HookContainer;
-use MediaWiki\HookContainer\HookRunner;
 use MediaWiki\Languages\LanguageConverterFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use ParserOptions;
-use Status;
 use Title;
 use WANObjectCache;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -57,15 +53,6 @@ class ApiQueryExtracts extends ApiQueryBase {
 	 */
 	private $wikiPageFactory;
 
-	/**
-	 * @var HookContainer
-	 */
-	private $hookContainer;
-	/**
-	 * @var HookRunner
-	 */
-	private $hookRunner;
-
 	// TODO: Allow extensions to hook into this to opt-in.
 	// This is partly for security reasons; see T107170.
 	/**
@@ -93,9 +80,7 @@ class ApiQueryExtracts extends ApiQueryBase {
 		$this->config = $configFactory->makeConfig( 'textextracts' );
 		$this->cache = $cache;
 		$this->langConvFactory = $langConvFactory;
-		$this->wikiPageFactory = $wikiPageFactory;
-		$this->hookContainer = MediaWikiServices::getInstance()->getHookContainer();
-		$this->hookRunner = new HookRunner( $this->hookContainer );	
+		$this->wikiPageFactory = $wikiPageFactory;	
 	}
 
 	/**
