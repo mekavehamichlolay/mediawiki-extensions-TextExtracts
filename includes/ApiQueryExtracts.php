@@ -8,13 +8,13 @@ use ApiQueryBase;
 use ApiUsageException;
 use Config;
 use ConfigFactory;
-use FauxRequest;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Languages\LanguageConverterFactory;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use ParserOptions;
-use Title;
+use MediaWiki\Title\Title;
 use WANObjectCache;
 use Wikimedia\ParamValidator\ParamValidator;
 use WikiPage;
@@ -116,7 +116,9 @@ class ApiQueryExtracts extends ApiQueryBase {
 				$this->setContinueEnumParameter( 'continue', $continue + $count - 1 );
 				break;
 			}
-
+			if( !$this->getAuthority()->authorizeRead('read',$t) ){
+				continue;
+			}
 			if ( $t->inNamespace( NS_FILE ) ) {
 				$text = '';
 				$titleInFileNamespace = true;
