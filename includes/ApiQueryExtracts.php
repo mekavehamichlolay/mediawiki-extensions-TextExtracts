@@ -116,6 +116,9 @@ class ApiQueryExtracts extends ApiQueryBase {
 				$this->setContinueEnumParameter( 'continue', $continue + $count - 1 );
 				break;
 			}
+			if( !$this->getAuthority()->authorizeRead( 'read', $t ) ){
+				continue;
+			}
 
 			if ( $t->inNamespace( NS_FILE ) ) {
 				$text = '';
