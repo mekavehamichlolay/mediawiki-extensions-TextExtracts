@@ -121,6 +121,11 @@ class ApiQueryExtracts extends ApiQueryBase {
 				break;
 			}
 
+			// Authorization check
+			if( !$this->getAuthority()->authorizeRead( 'read', $t ) ){
+				continue;
+			}
+
 			if ( $t->getNamespace() === NS_FILE ) {
 				$text = '';
 				$titleInFileNamespace = true;
